@@ -1,11 +1,17 @@
 # 📐 TASK 의존성 상세 다이어그램 (Per-Task Granularity)
 
 **Document ID:** TASK-DIAG-001  
-**Revision:** 1.0  
+**Revision:** 1.1  
 **Date:** 2026-04-20  
-**기반 문서:** [`06_TASK_LIST_v1.md`](./06_TASK_LIST_v1.md) (137개 태스크)  
+**기반 문서:** [`06_TASK_LIST_v1.md`](./06_TASK_LIST_v1.md) v1.1 (138개 태스크)  
 
-> 본 문서는 `06_TASK_LIST_v1.md` §9의 Phase 단위 추상 다이어그램을 보완하여, **개별 137개 TASK를 모두 노드로 표현**한 상세 의존성 그래프를 제공한다. 화살표 `A --> B`는 "A가 완료되어야 B를 시작할 수 있음"을 의미한다.
+> 본 문서는 `06_TASK_LIST_v1.md` §9의 Phase 단위 추상 다이어그램을 보완하여, **개별 138개 TASK를 모두 노드로 표현**한 상세 의존성 그래프를 제공한다. 화살표 `A --> B`는 "A가 완료되어야 B를 시작할 수 있음"을 의미한다.
+
+> **v1.1 Changelog (2026-04-20)**
+> - 신규 노드 1건: `DATA-012`(REWARD_LEDGER + USER_BADGE 스키마)
+> - 신규 엣지 6건: `DATA-007 → DATA-012`, `DATA-009 → DATA-012`, `DATA-012 → DATA-010`, `DATA-012 → F4-C-005`, `F4-C-004 → F4-C-005`, `COM-C-002 → F4-C-005`
+> - Phase 1 노드 수 24 → 25, 총 노드 137 → 138, 총 엣지 187 → 193
+> - §4.2 Hub 분석: `F4-C-005` fan-in 1→4, `COM-C-002` fan-out 증가 반영
 
 ---
 
@@ -37,7 +43,7 @@ Phase 0 → Phase 1 → Phase 2 → Phase 3/4/5 (병렬) → Phase 6 (Should/Cou
 
 ---
 
-## 2. 전체 통합 의존성 다이어그램 (137개 노드)
+## 2. 전체 통합 의존성 다이어그램 (138개 노드)
 
 > 모든 태스크와 의존 관계를 단일 그래프로 표현. Phase별 subgraph로 시각적 그룹핑.
 
@@ -68,6 +74,7 @@ flowchart TB
         DATA_009["DATA-009"]
         DATA_010["DATA-010"]
         DATA_011["DATA-011"]
+        DATA_012["DATA-012"]
         MOCK_001["MOCK-001"]
         MOCK_002["MOCK-002"]
         MOCK_003["MOCK-003"]
@@ -247,7 +254,10 @@ flowchart TB
     DATA_009 --> DATA_007
     DATA_009 --> DATA_008
     DATA_001 --> DATA_009
+    DATA_007 --> DATA_012
+    DATA_009 --> DATA_012
     DATA_002 --> DATA_010
+    DATA_012 --> DATA_010
     DATA_010 --> DATA_011
     API_001 --> F1_C_001
     DATA_004 --> F1_C_001
@@ -286,6 +296,9 @@ flowchart TB
     F4_C_001 --> F4_C_003
     F4_C_003 --> F4_C_004
     F4_C_003 --> F4_C_005
+    F4_C_004 --> F4_C_005
+    DATA_012 --> F4_C_005
+    COM_C_002 --> F4_C_005
     DATA_005 --> F4_Q_001
     DATA_006 --> F4_Q_001
     DATA_006 --> F4_Q_002
@@ -416,7 +429,7 @@ flowchart TB
     class ADM_C_001,ADM_C_002,ADM_Q_001,ADM_Q_002,P2_005,UI_060,UI_061,UI_062 cAdmin
     class API_001,API_002,API_003,API_004,API_005,API_006,API_007,API_008 cApi
     class COM_C_001,COM_C_002,COM_C_003,COM_C_004,COM_C_005,COM_Q_001,COM_Q_002,COM_RH_001,P2_001 cCommon
-    class DATA_002,DATA_003,DATA_004,DATA_005,DATA_006,DATA_007,DATA_008,DATA_009,DATA_010,DATA_011 cData
+    class DATA_002,DATA_003,DATA_004,DATA_005,DATA_006,DATA_007,DATA_008,DATA_009,DATA_010,DATA_011,DATA_012 cData
     class CRON_001,F1_C_001,F1_C_002,F1_C_003,F1_C_004,F1_Q_001,F1_Q_002,F1_RH_001,P2_003 cF1
     class F2_C_001,F2_C_002,F2_C_003,F2_C_004,F2_C_005,F2_Q_001,F2_Q_002,F2_RH_001,P2_002 cF2
     class F3_C_001,F3_C_002,F3_C_003,F3_Q_001 cF3
@@ -456,7 +469,7 @@ flowchart TB
     class DATA_001 cInfra
 ```
 
-### 3.2 Phase 1 — 데이터·계약 (SSOT) (24개 노드)
+### 3.2 Phase 1 — 데이터·계약 (SSOT) (25개 노드)
 
 ```mermaid
 flowchart LR
@@ -478,6 +491,7 @@ flowchart LR
     DATA_009["DATA-009<br/><small>USER 테이블 Prisma 스키마 정의 및 마이그..</small>"]
     DATA_010["DATA-010<br/><small>Prisma ERD 전체 관계 검증 및 통합 마이그..</small>"]
     DATA_011["DATA-011<br/><small>MVP 초기 Seed 데이터 스크립트 작성 (상위 ..</small>"]
+    DATA_012["DATA-012<br/><small>REWARD_LEDGER + USER_BADGE 테이블..</small>"]
     MOCK_001["MOCK-001<br/><small>Super-Calc API Mock 엔드포인트 구성..</small>"]
     MOCK_002["MOCK-002<br/><small>Badge API Mock 엔드포인트 구성 (캐시 ..</small>"]
     MOCK_003["MOCK-003<br/><small>Search API Mock 엔드포인트 구성 (자동..</small>"]
@@ -507,7 +521,10 @@ flowchart LR
     DATA_009 --> DATA_007
     DATA_009 --> DATA_008
     DATA_001 --> DATA_009
+    DATA_007 --> DATA_012
+    DATA_009 --> DATA_012
     DATA_002 --> DATA_010
+    DATA_012 --> DATA_010
     DATA_010 --> DATA_011
     API_001 --> MOCK_001
     API_002 --> MOCK_002
@@ -533,7 +550,7 @@ flowchart LR
     classDef cUi     fill:#D1FAE5,stroke:#059669,color:#064E3B
     classDef cTest   fill:#F3F4F6,stroke:#9CA3AF,color:#374151
     class API_001,API_002,API_003,API_004,API_005,API_006,API_007,API_008 cApi
-    class DATA_002,DATA_003,DATA_004,DATA_005,DATA_006,DATA_007,DATA_008,DATA_009,DATA_010,DATA_011 cData
+    class DATA_002,DATA_003,DATA_004,DATA_005,DATA_006,DATA_007,DATA_008,DATA_009,DATA_010,DATA_011,DATA_012 cData
     class MOCK_001,MOCK_002,MOCK_003,MOCK_004,MOCK_005,MOCK_006 cMock
 ```
 
@@ -596,6 +613,7 @@ flowchart TB
         DATA_006["DATA-006"]:::ext
         DATA_007["DATA-007"]:::ext
         DATA_009["DATA-009"]:::ext
+        DATA_012["DATA-012"]:::ext
         MOCK_005["MOCK-005"]:::ext
         MOCK_006["MOCK-006"]:::ext
         NFR_001["NFR-001"]:::ext
@@ -659,6 +677,9 @@ flowchart TB
     F4_C_001 --> F4_C_003
     F4_C_003 --> F4_C_004
     F4_C_003 --> F4_C_005
+    F4_C_004 --> F4_C_005
+    DATA_012 --> F4_C_005
+    COM_C_002 --> F4_C_005
     DATA_005 --> F4_Q_001
     DATA_006 --> F4_Q_001
     DATA_006 --> F4_Q_002
@@ -1089,13 +1110,15 @@ DATA-001 → DATA-002 → DATA-004 → API-001 → F1-C-001 → F1-C-004 → F1-
 | 1 | **UI-040** | E-UI | 7 | 카카오톡 공유 버튼 컴포넌트 |
 | 2 | **F1-RH-001** | E-F1 | 4 | `GET /api/v1/compare` 엔드포인트 .. |
 | 3 | **F2-C-001** | E-F2 | 4 | 뱃지 판정 로직 구현 (APPROVED/CAUTIO.. |
-| 4 | **COM-Q-001** | E-COMMON | 3 | 영양소/성분 검색 + 자동완성 로직 구현 (Sear.. |
-| 5 | **CRON-001** | E-F1 | 3 | Vercel Cron 일 1회 가격 동기화 배치 구.. |
-| 6 | **TEST-F4-005** | E-TEST | 3 | 오류 제보 전체 생명주기 테스트 (접수→검증→수정→.. |
-| 7 | **UI-020** | E-UI | 3 | 제품 상세 페이지 — 성분 목록 + 뱃지 + 1일 .. |
-| 8 | **DATA-007** | E-DATA | 2 | ERROR_REPORT 테이블 Prisma 스키마 .. |
-| 9 | **API-003** | E-API | 2 | Search API (`GET /api/v1/sea.. |
-| 10 | **F1-Q-001** | E-F1 | 2 | 쿠팡 파트너스 API 단일 채널 가격 조회 로직 구.. |
+| 4 | **F4-C-005** | E-F4 | 4 | 제보 보상(포인트/배지) 지급 로직 구현 (DATA-012 Ledger + 트랜잭션 원자성) |
+| 5 | **COM-Q-001** | E-COMMON | 3 | 영양소/성분 검색 + 자동완성 로직 구현 (Sear.. |
+| 6 | **CRON-001** | E-F1 | 3 | Vercel Cron 일 1회 가격 동기화 배치 구.. |
+| 7 | **TEST-F4-005** | E-TEST | 3 | 오류 제보 전체 생명주기 테스트 (접수→검증→수정→.. |
+| 8 | **UI-020** | E-UI | 3 | 제품 상세 페이지 — 성분 목록 + 뱃지 + 1일 .. |
+| 9 | **DATA-007** | E-DATA | 2 | ERROR_REPORT 테이블 Prisma 스키마 .. |
+| 10 | **API-003** | E-API | 2 | Search API (`GET /api/v1/sea.. |
+
+> **Note (v1.1):** `F4-C-005`는 `DATA-012` 신설로 fan-in이 1→4로 증가하여 Top 4에 진입. 그 밖의 `DATA-012` 자체는 fan-in 2(DATA-007, DATA-009) / fan-out 2(DATA-010, F4-C-005)로 Top 10 진입 기준 미달. `COM-C-002`의 fan-out은 4→5(+F4-C-005)로 증가했으나 Top 10 임계치(5 이상 다수) 기준에는 여전히 미치지 못함.
 
 ---
 
@@ -1103,10 +1126,12 @@ DATA-001 → DATA-002 → DATA-004 → API-001 → F1-C-001 → F1-C-004 → F1-
 
 | 항목 | 값 |
 |---|---|
-| **총 노드 수** | 137 |
-| **총 의존성 엣지 수** | 187 |
+| **총 노드 수** | 138 |
+| **총 의존성 엣지 수** | 193 |
 | **루트 태스크 (선행 없음)** | 1개 — DATA-001 |
 | **리프 태스크 (후행 없음)** | 62개 |
+
+> **v1.1 증감:** 노드 +1 (`DATA-012`), 엣지 +6 (`DATA-007→DATA-012`, `DATA-009→DATA-012`, `DATA-012→DATA-010`, `DATA-012→F4-C-005`, `F4-C-004→F4-C-005`, `COM-C-002→F4-C-005`). 루트/리프 집합 불변 (`DATA-012`는 fan-in 2·fan-out 2로 중간 노드, `F4-C-005`는 기존 중간 노드).
 
 **리프 태스크 목록** (후행 의존이 없는 최종 산출물):
 
@@ -1175,4 +1200,4 @@ DATA-001 → DATA-002 → DATA-004 → API-001 → F1-C-001 → F1-C-004 → F1-
 
 ---
 
-*— End of TASK-DIAG-001 v1.0 —*
+*— End of TASK-DIAG-001 v1.1 —*
