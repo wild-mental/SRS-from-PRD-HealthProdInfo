@@ -1,10 +1,12 @@
 # 📋 개발 태스크 목록 명세서 (Task Breakdown Specification)
 
 **Document ID:** TASK-001  
-**Revision:** 1.0  
-**Date:** 2026-04-17  
+**Revision:** 1.1  
+**Date:** 2026-04-20  
 **기반 문서:** SRS-001 v1.4 (2026-04-17)  
 **작성 관점:** Technical Project Manager / System Architect  
+
+> **v1.1 Changelog (2026-04-20)** — DATA-012(REWARD_LEDGER + USER_BADGE) 신설, F4-C-005 의존성에 DATA-012/F4-C-004/COM-C-002 추가, DATA-010 의존성에 DATA-012 포함, Mermaid 의존성 그래프 갱신, Step 1 태스크 수 25→26, MVP 총계 130→131.
 
 ---
 
@@ -72,7 +74,8 @@
 | **DATA-007** | E-DATA | ERROR_REPORT 테이블 Prisma 스키마 정의 및 마이그레이션 생성 (FK → PRODUCT, USER, Enum: SUBMITTED/REVIEWING/RESOLVED/REJECTED) | §6.2.6 ERROR_REPORT | DATA-002, DATA-009 | M |
 | **DATA-008** | E-DATA | COMPARISON_HISTORY 테이블 Prisma 스키마 정의 (비교 이력 저장용, FK → USER) | §4.1.5 REQ-FUNC-035 | DATA-009 | L |
 | **DATA-009** | E-DATA | USER 테이블 Prisma 스키마 정의 및 마이그레이션 생성 (최소 수집: email, persona_type) | §6.2.7 USER, CON-4 | DATA-001 | L |
-| **DATA-010** | E-DATA | Prisma ERD 전체 관계 검증 및 통합 마이그레이션 실행 (`prisma migrate dev`) | §6.2.8 ER Summary | DATA-002~009 | M |
+| **DATA-012** | E-DATA | REWARD_LEDGER + USER_BADGE 테이블 Prisma 스키마 정의 및 마이그레이션 (보상 Ledger 패턴, CON-4 준수, F4-C-005 선행) | §4.1.4 REQ-FUNC-026, §3.6 Reward Module, CON-4 | DATA-007, DATA-009 | M |
+| **DATA-010** | E-DATA | Prisma ERD 전체 관계 검증 및 통합 마이그레이션 실행 (`prisma migrate dev`) | §6.2.8 ER Summary | DATA-002~009, DATA-012 | M |
 | **DATA-011** | E-DATA | MVP 초기 Seed 데이터 스크립트 작성 (상위 300~500개 제품, 성분, 식약처 공전 데이터 로컬 적재) | §3.1.1 사전 데이터 확보 원칙 | DATA-010 | H |
 
 ### 3.2 API 계약·DTO 정의 태스크
@@ -123,8 +126,8 @@
 |---|---|---|---|---|---|
 | **F2-Q-001** | E-F2 | [Query] 제품 성분 목록 조회 로직 구현 (product_id → INGREDIENT[]) | §6.3.2, §6.2.2 | DATA-003 | L |
 | **F2-Q-002** | E-F2 | [Query] 식약처 공공 API 기능성 인정 원료 조회 로직 구현 | §4.1.2 REQ-FUNC-011, §6.3.2 | API-007, MOCK-006 | M |
-| **F2-C-001** | E-F2 | [Command] 뱃지 판정 로직 구현 (APPROVED/CAUTION/NOT_APPROVED 분기, 공전 원문 1:1 매칭) | §4.1.2 REQ-FUNC-011, §6.3.2 | F2-Q-001, F2-Q-002, DATA-005 | H |
-| **F2-C-002** | E-F2 | [Command] 금지 표현 검증 로직 구현 (질병 예방·치료 표현 원천 차단, 검출 0건 보장) | §4.1.2 REQ-FUNC-012, CON-2 | F2-C-001 | M |
+| **F2-C-001** | E-F2 | [Command] 뱃지 판정 로직 구현 (APPROVED/CAUTION/NOT_APPROVED 분기, 공전 원문 1:1 매칭) | §4.1.2 REQ-FUNC-011, §6.3.2 | F2-Q-001, F2-Q-002, DATA-005, F2-C-002 | H |
+| **F2-C-002** | E-F2 | [Command] 금지 표현 검증 로직 구현 (질병 예방·치료 표현 원천 차단, 검출 0건 보장) | §4.1.2 REQ-FUNC-012, CON-2 | DATA-001 | M |
 | **F2-C-003** | E-F2 | [Command] 전문 용어 → 일상어 번역 매핑 로직 구현 (매핑 테이블 기반, 정확도 ≥ 98%) | §4.1.2 REQ-FUNC-013 | DATA-003 | M |
 | **F2-C-004** | E-F2 | [Command] 미등재 원료 회색 라벨 생성 로직 (뱃지 미부여 + 사유 툴팁) | §4.1.2 REQ-FUNC-014 | F2-C-001 | L |
 | **F2-C-005** | E-F2 | [Command] 뱃지 캐싱 로직 구현 (Next.js Cache, TTL 24시간) | §3.4.2, §3.6 | F2-C-001 | M |
@@ -149,7 +152,7 @@
 | **F4-C-002** | E-F4 | [Command] 스팸/중복 제보 필터링 로직 구현 (동일 제품 24h 내 5건+, 빈 문자열 차단, 정확도 ≥ 95%, false positive ≤ 2%) | §4.1.4 REQ-FUNC-027 | F4-C-001 | M |
 | **F4-C-003** | E-F4 | [Command] 오류 제보 처리 상태 변경 로직 (SUBMITTED → REVIEWING → RESOLVED/REJECTED) | §4.1.4 REQ-FUNC-025, §6.3.3 | F4-C-001 | M |
 | **F4-C-004** | E-F4 | [Command] 제보 수정 완료 시 이메일 알림 발송 로직 (Resend API, 수정 후 1시간 이내) | §4.1.4 REQ-FUNC-026 | F4-C-003 | M |
-| **F4-C-005** | E-F4 | [Command] 제보 보상(포인트/배지) 지급 로직 구현 | §4.1.4 REQ-FUNC-026, §3.6 Reward Module | F4-C-003 | M |
+| **F4-C-005** | E-F4 | [Command] 제보 보상(포인트/배지) 지급 로직 구현 (DATA-012 Ledger 기록 + 누적 배지 + 트랜잭션 원자성) | §4.1.4 REQ-FUNC-026, §3.6 Reward Module | F4-C-003, F4-C-004, DATA-012, COM-C-002 | M |
 
 ### 4.5 E-COMMON: 공통 기능
 
@@ -319,7 +322,7 @@
 | **UI-025** | E-UI | 라벨 아카이브 이미지 뷰어 컴포넌트 (아코디언 내부) | REQ-FUNC-023 | UI-024 | L |
 | **UI-030** | E-UI | [오류 신고] 구조화된 폼 모달 (대상 필드명, 기존 값, 올바른 값, 근거 자료) | REQ-FUNC-028, §3.5 UC-10 | UI-002, MOCK-004 | M |
 | **UI-031** | E-UI | 접수 확인 알림 UI (예상 처리 시간 48h 표시) | REQ-FUNC-024 | UI-003 | L |
-| **UI-040** | E-UI | 카카오톡 공유 버튼 컴포넌트 | REQ-FUNC-016, §3.5 UC-07 | UI-011 | L |
+| **UI-040** | E-UI | 카카오톡 공유 버튼 컴포넌트 | REQ-FUNC-016, §3.5 UC-07 | UI-001, UI-003, UI-011, F3-C-001, F3-C-002, F3-C-003, COM-C-005 | M |
 | **UI-041** | E-UI | 카카오 API 장애 시 URL 복사 폴백 UI + 토스트 | REQ-FUNC-021 | UI-040, UI-003 | M |
 | **UI-042** | E-UI | 공유 카드 랜딩 페이지 (카카오 내장 브라우저 웹뷰, 앱 설치/가입 불요) + 최저가 구매하기 버튼 | REQ-FUNC-019~020, §3.5 UC-08 | UI-011 | M |
 | **UI-050** | E-UI | 이메일 기반 회원가입/로그인 페이지 UI | REQ-FUNC-029 | UI-002 | M |
@@ -350,7 +353,8 @@
 | **DATA-007** | E-DATA | ERROR_REPORT 테이블 Prisma 스키마·마이그레이션 | §6.2.6 | DATA-002, DATA-009 | M |
 | **DATA-008** | E-DATA | COMPARISON_HISTORY 테이블 Prisma 스키마 | §4.1.5 REQ-FUNC-035 | DATA-009 | L |
 | **DATA-009** | E-DATA | USER 테이블 Prisma 스키마·마이그레이션 | §6.2.7 | DATA-001 | L |
-| **DATA-010** | E-DATA | ERD 통합 검증 + 마이그레이션 실행 | §6.2.8 | DATA-002~009 | M |
+| **DATA-012** | E-DATA | REWARD_LEDGER + USER_BADGE 스키마·마이그레이션 (Ledger 패턴, CON-4 준수) | §4.1.4 REQ-FUNC-026, §3.6, CON-4 | DATA-007, DATA-009 | M |
+| **DATA-010** | E-DATA | ERD 통합 검증 + 마이그레이션 실행 | §6.2.8 | DATA-002~009, DATA-012 | M |
 | **DATA-011** | E-DATA | MVP Seed 데이터 스크립트 (300~500제품) | §3.1.1 | DATA-010 | H |
 | **API-001** | E-API | Super-Calc API DTO/에러코드 타입 정의 | §6.1.2 INT-API-01 | DATA-004 | M |
 | **API-002** | E-API | Badge API DTO/에러코드 타입 정의 | §6.1.2 INT-API-02 | DATA-005 | M |
@@ -375,8 +379,8 @@
 | **F1-RH-001** | E-F1 | [Route Handler] `/api/v1/compare` 통합 조립 | §6.1.2 INT-API-01 | F1-Q-001~002, F1-C-001~004 | H |
 | **F2-Q-001** | E-F2 | [Query] 제품 성분 목록 조회 | §6.2.2 | DATA-003 | L |
 | **F2-Q-002** | E-F2 | [Query] 식약처 API 기능성 원료 조회 | REQ-FUNC-011 | API-007, MOCK-006 | M |
-| **F2-C-001** | E-F2 | [Command] 뱃지 판정 로직 (APPROVED/CAUTION/NOT_APPROVED) | REQ-FUNC-011 | F2-Q-001~002, DATA-005 | H |
-| **F2-C-002** | E-F2 | [Command] 금지 표현 검증 (0건 보장) | REQ-FUNC-012, CON-2 | F2-C-001 | M |
+| **F2-C-001** | E-F2 | [Command] 뱃지 판정 로직 (APPROVED/CAUTION/NOT_APPROVED) | REQ-FUNC-011 | F2-Q-001~002, DATA-005, F2-C-002 | H |
+| **F2-C-002** | E-F2 | [Command] 금지 표현 검증 (0건 보장) | REQ-FUNC-012, CON-2 | DATA-001 | M |
 | **F2-C-003** | E-F2 | [Command] 전문 용어 → 일상어 번역 매핑 | REQ-FUNC-013 | DATA-003 | M |
 | **F2-C-004** | E-F2 | [Command] 미등재 원료 회색 라벨 생성 | REQ-FUNC-014 | F2-C-001 | L |
 | **F2-C-005** | E-F2 | [Command] 뱃지 캐싱 (Next.js Cache, TTL 24h) | §3.4.2 | F2-C-001 | M |
@@ -391,7 +395,7 @@
 | **F4-C-002** | E-F4 | [Command] 스팸/중복 제보 필터링 | REQ-FUNC-027 | F4-C-001 | M |
 | **F4-C-003** | E-F4 | [Command] 제보 상태 변경 (생명주기 관리) | REQ-FUNC-025 | F4-C-001 | M |
 | **F4-C-004** | E-F4 | [Command] 제보 수정 완료 이메일 알림 (Resend) | REQ-FUNC-026 | F4-C-003 | M |
-| **F4-C-005** | E-F4 | [Command] 제보 보상 지급 (포인트/배지) | REQ-FUNC-026 | F4-C-003 | M |
+| **F4-C-005** | E-F4 | [Command] 제보 보상 지급 (Ledger + 배지, 트랜잭션 원자성) | REQ-FUNC-026 | F4-C-003, F4-C-004, DATA-012, COM-C-002 | M |
 | **COM-C-001** | E-COMMON | [Command] 이메일 기반 사용자 가입 | REQ-FUNC-029 | DATA-009 | M |
 | **COM-C-002** | E-COMMON | [Command] 인증/세션 관리 (Supabase Auth) | §6.3.1 | COM-C-001 | H |
 | **COM-Q-001** | E-COMMON | [Query] 성분 검색 + 자동완성 | REQ-FUNC-030 | API-003, DATA-002~003 | M |
@@ -463,7 +467,7 @@
 | **UI-025** | E-UI | 라벨 이미지 뷰어 컴포넌트 | REQ-FUNC-023 | UI-024 | L |
 | **UI-030** | E-UI | 오류 신고 폼 모달 | REQ-FUNC-028 | UI-002, MOCK-004 | M |
 | **UI-031** | E-UI | 접수 확인 알림 UI | REQ-FUNC-024 | UI-003 | L |
-| **UI-040** | E-UI | 카카오톡 공유 버튼 | REQ-FUNC-016 | UI-011 | L |
+| **UI-040** | E-UI | 카카오톡 공유 버튼 | REQ-FUNC-016 | UI-001, UI-003, UI-011, F3-C-001, F3-C-002, F3-C-003, COM-C-005 | M |
 | **UI-041** | E-UI | URL 복사 폴백 UI + 토스트 | REQ-FUNC-021 | UI-040, UI-003 | M |
 | **UI-042** | E-UI | 공유 카드 랜딩 페이지 + 구매 버튼 | REQ-FUNC-019~020 | UI-011 | M |
 | **UI-050** | E-UI | 회원가입/로그인 페이지 | REQ-FUNC-029 | UI-002 | M |
@@ -475,6 +479,8 @@
 ---
 
 ## 9. 의존성 다이어그램
+
+> 본 절은 Phase 단위 추상 다이어그램이다. 개별 137개 TASK를 모두 노드로 표현한 **상세 다이어그램**은 [`06_TASK_DEPENDENCY_DIAGRAM_v1.md`](./06_TASK_DEPENDENCY_DIAGRAM_v1.md)를 참조한다.
 
 ```mermaid
 flowchart TB
@@ -490,6 +496,7 @@ flowchart TB
         DATA-006["DATA-006<br/>LABEL_ARCHIVE 스키마"]
         DATA-007["DATA-007<br/>ERROR_REPORT 스키마"]
         DATA-009["DATA-009<br/>USER 스키마"]
+        DATA-012["DATA-012<br/>REWARD_LEDGER+USER_BADGE 스키마"]
         DATA-010["DATA-010<br/>ERD 통합 검증"]
         DATA-011["DATA-011<br/>Seed 데이터"]
         API-001["API-001<br/>Super-Calc DTO"]
@@ -528,6 +535,8 @@ flowchart TB
     DATA-002 --> DATA-006
     DATA-009 --> DATA-007
     DATA-002 --> DATA-007
+    DATA-007 --> DATA-012
+    DATA-009 --> DATA-012
     DATA-002 --> DATA-010
     DATA-003 --> DATA-010
     DATA-004 --> DATA-010
@@ -535,6 +544,7 @@ flowchart TB
     DATA-006 --> DATA-010
     DATA-007 --> DATA-010
     DATA-009 --> DATA-010
+    DATA-012 --> DATA-010
     DATA-010 --> DATA-011
 
     DATA-004 --> API-001
@@ -563,6 +573,7 @@ flowchart TB
     DATA-009 --> COM-AUTH
 
     DATA-007 --> F4-C
+    DATA-012 --> F4-C
 
     F1-RH --> CRON
 
@@ -604,15 +615,15 @@ flowchart TB
 
 | 구분 | 태스크 수 |
 |---|---|
-| **Step 1: 계약·데이터 (DATA/API/MOCK)** | 25 |
-| **Step 2: 로직 (Query/Command/RH/Cron/Admin)** | 31 |
-| **Step 3: 테스트 (TEST)** | 22 |
-| **Step 4: 비기능 (NFR)** | 17 |
-| **Step 5: UI/UX (UI)** | 26 |
-| **MVP 총계** | **121** |
+| **Step 1: 계약·데이터 (DATA/API/MOCK)** | 26 |
+| **Step 2: 로직 (Query/Command/RH/Cron/Admin)** | 39 |
+| **Step 3: 테스트 (TEST)** | 24 |
+| **Step 4: 비기능 (NFR)** | 18 |
+| **Step 5: UI/UX (UI)** | 24 |
+| **MVP 총계** | **131** |
 | **Phase 2 (Should/Could)** | 7 |
-| **전체 합계** | **128** |
+| **전체 합계** | **138** |
 
 ---
 
-*— End of TASK-001 v1.0 —*
+*— End of TASK-001 v1.1 —*
